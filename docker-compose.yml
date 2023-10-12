@@ -23,3 +23,20 @@ services:
      - ./.env.dev
     ports:
      - "5432:5432"
+
+  redis:
+    image: redis:alpine
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A app worker -l info
+    volumes:
+      - ./app:/app
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - pgdb
+      - redis
+      - app
