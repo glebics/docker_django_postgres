@@ -8,6 +8,7 @@ services:
     - "8000:8000"
     volumes:
     - ./app:/app
+    - user_photos_volume:/app/media/
     command: >
       sh -c "python3 manage.py wait_for_db &&
              python3 manage.py migrate && 
@@ -22,9 +23,9 @@ services:
     env_file:
      - ./.env.dev
     volumes:
-      - pgdata:/app/pgdb/data/
+      - pgdata:/var/lib/postgresql/data
     ports:
-     - "5432:5432"
+     - "5433:5433"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -40,9 +41,9 @@ services:
     restart: always
     build:
       context: .
-    command: celery -A app worker -l info
+    command: celery -A config worker -l info
     volumes:
-      - ./app:/app
+    - ./app:/app
     env_file:
       - ./.env.dev
     depends_on:
@@ -52,3 +53,4 @@ services:
 
 volumes:
   pgdata:
+  user_photos_volume:
